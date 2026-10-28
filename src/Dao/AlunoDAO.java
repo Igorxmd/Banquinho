@@ -1,4 +1,5 @@
 package dao;
+
 import factory.ConnectionFactory;
 import java.sql.*;
 import java.util.ArrayList;
@@ -7,16 +8,13 @@ import javax.swing.JOptionPane;
 import modelo.Aluno;
 
 public class AlunoDAO {
-    private Connection connection;
-    
-    public AlunoDAO() throws SQLException{
-        this.connection = new ConnectionFactory().getConnection();
-    }
-    
-    public void adiciona(Aluno aluno){
-        String sql = "INSERT INTO usuario(nome, sexo, nota1, nota2, media, situacao, apagado)VALUES (?,?,?,?,?,?,?)";
-        try{
-            PreparedStatement stmt = connection.prepareStatement(sql);
+
+    public void adiciona(Aluno aluno) {
+        String sql = "INSERT INTO alunos(nome, sexo, nota1, nota2, media, situacao, apagado) VALUES (?,?,?,?,?,?,?)";
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+        try {
+            stmt = con.prepareStatement(sql);
             stmt.setString(1, aluno.getNome());
             stmt.setInt(2, aluno.getSexo());
             stmt.setDouble(3, aluno.getNota1());
@@ -25,22 +23,23 @@ public class AlunoDAO {
             stmt.setInt(6, aluno.getSituacao());
             stmt.setInt(7, aluno.getApagado());
             stmt.execute();
-            stmt.close();
-        }catch(SQLException e){
+        } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            ConnectionFactory.closeConnection(con, stmt);
         }
     }
-    
-    public List<Aluno> lerTudo(){
+
+    public List<Aluno> lerTudo() {
         Connection con = ConnectionFactory.getConnection();
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        List<Aluno> listAlunos = new ArrayList<>();
+        List<Aluno> lista = new ArrayList<>();
         String sql = "SELECT * FROM alunos WHERE apagado=0";
-        try{
+        try {
             stmt = con.prepareStatement(sql);
             rs = stmt.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 Aluno aluno = new Aluno();
                 aluno.setId(rs.getLong("cod"));
                 aluno.setNome(rs.getString("nome"));
@@ -50,27 +49,28 @@ public class AlunoDAO {
                 aluno.setMedia(rs.getDouble("media"));
                 aluno.setSituacao(rs.getInt("situacao"));
                 aluno.setApagado(rs.getInt("apagado"));
-                listAlunos.add(aluno);
+                lista.add(aluno);
             }
-        }catch(SQLException ex){
-            JOptionPane.showMessageDialog(null, "Erro na leitura do banco: "+ex,"ERRO",JOptionPane.ERROR_MESSAGE);
-        }finally{
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Erro na leitura do banco: " + ex, "ERRO", JOptionPane.ERROR_MESSAGE);
+        } finally {
             ConnectionFactory.closeConnection(con, stmt, rs);
         }
-        return listAlunos;
+        return lista;
     }
-    public void exclui(int cod){
+
+    public void exclui(int cod) {
         Connection con = ConnectionFactory.getConnection();
         PreparedStatement stmt = null;
-        String sql = "UPDATE alunos set apagado = 1 WHERE cod = ?";
-        try{
-            stmt = con.preparedStatement(sql);
-            stmt = set.Int(1, cod);
+        String sql = "UPDATE alunos SET apagado = 1 WHERE cod = ?";
+        try {
+            stmt = con.prepareStatement(sql);
+            stmt.setInt(1, cod);
             stmt.executeUpdate();
             JOptionPane.showMessageDialog(null, "Aluno excluído com sucesso!");
-        }catch(SQLException e){
-            JOptionPane.showMessageDialog(null, "Erro ao exluir"+e);
-        }finally{
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao excluir: " + e);
+        } finally {
             ConnectionFactory.closeConnection(con, stmt);
         }
     }

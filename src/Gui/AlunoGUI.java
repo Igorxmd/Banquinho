@@ -231,7 +231,7 @@ try {
     edtMedia.setText("");
     txtSitua.setText("---");
     buttonGroup1.clearSelection();
-} catch (SQLException ex) {
+} catch (RuntimeException ex) {
     JOptionPane.showMessageDialog(null, "Erro ao cadastrar aluno: " + ex.getMessage());
 }
             

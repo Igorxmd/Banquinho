@@ -10,16 +10,14 @@ public class ConnectionFactory {
     private static final String USER = "root";
     private static final String PASS = "";
     
-    public static Connection getConnection() throws SQLException, SQLException{
-        try{
-            Class.forName(DRIVER);
-            return DriverManager.getConnection(URL, USER, PASS);
-        }catch(SQLException ex){
-            throw new RuntimeException(ex);
-        }catch(ClassNotFoundException ex){
-            throw new RuntimeException(ex);
-        }
+    public static Connection getConnection() {
+    try {
+        Class.forName(DRIVER);
+        return DriverManager.getConnection(URL, USER, PASS);
+    } catch (SQLException | ClassNotFoundException ex) {
+        throw new RuntimeException(ex);
     }
+}
     
     public static void closeConnection(Connection con){
         try{

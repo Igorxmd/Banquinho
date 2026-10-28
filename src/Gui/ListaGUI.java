@@ -38,9 +38,9 @@ public class ListaGUI extends javax.swing.JFrame {
 
         // Define o sexo
         if (a.getSexo() == 0) {
-            sx = "M";
-        } else if (a.getSexo() == 1) {
             sx = "F";
+        } else if (a.getSexo() == 1) {
+            sx = "M";
         } else {
             sx = "O";
         }
