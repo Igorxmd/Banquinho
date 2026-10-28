@@ -4,8 +4,11 @@
  */
 package Gui;
 
+import dao.AlunoDAO;
 import java.awt.Color;
 import javax.swing.JOptionPane;
+import modelo.Aluno;
+import java.sql.SQLException;
 
 /**
  *
@@ -197,7 +200,7 @@ edtMedia.setText(String.format("%.1f", med));
     }//GEN-LAST:event_btnSairActionPerformed
 
     private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
-        if (edtNome.getText().isEmpty() || edtNota1.getText().isEmpty() || edtNota2.getText().isEmpty() ||){
+        if (edtNome.getText().isEmpty() || edtNota1.getText().isEmpty() || edtNota2.getText().isEmpty()){
             JOptionPane.showMessageDialog(null, "Os campos nome, nota 1 e nota 2 devem ser preenchidos.");
         }else{
             Aluno aluno = new Aluno();
@@ -216,16 +219,21 @@ if(aluno.getMedia()>=6.0)
     aluno.setSituacao(0);
 else
     aluno.setSituacao(1);
-AlunoDAO dao = new AlunoDAO();
-dao.adiciona(aluno);
-JOptionPane.showMessageDialog(null, "Aluno adicionado!");
-btnCadastrar.setEnabled(false);
-edtNome.setText("");
-edtNota1.setText("");
-edtNota2.setText("");
-edtMedia.setText("");
-txtSitua.setText("---");
-buttonGroup1.clearSelection();
+try {
+    AlunoDAO dao = new AlunoDAO();
+    dao.adiciona(aluno);
+    JOptionPane.showMessageDialog(null, "Aluno adicionado!");
+
+    btnCadastrar.setEnabled(false);
+    edtNome.setText("");
+    edtNota1.setText("");
+    edtNota2.setText("");
+    edtMedia.setText("");
+    txtSitua.setText("---");
+    buttonGroup1.clearSelection();
+} catch (SQLException ex) {
+    JOptionPane.showMessageDialog(null, "Erro ao cadastrar aluno: " + ex.getMessage());
+}
             
         }
     }//GEN-LAST:event_btnCadastrarActionPerformed

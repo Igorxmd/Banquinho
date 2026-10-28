@@ -1,6 +1,9 @@
 package dao;
 import factory.ConnectionFactory;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JOptionPane;
 import modelo.Aluno;
 
 public class AlunoDAO {
@@ -25,6 +28,50 @@ public class AlunoDAO {
             stmt.close();
         }catch(SQLException e){
             throw new RuntimeException(e);
+        }
+    }
+    
+    public List<Aluno> lerTudo(){
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Aluno> listAlunos = new ArrayList<>();
+        String sql = "SELECT * FROM alunos WHERE apagado=0";
+        try{
+            stmt = con.prepareStatement(sql);
+            rs = stmt.executeQuery();
+            while(rs.next()){
+                Aluno aluno = new Aluno();
+                aluno.setId(rs.getLong("cod"));
+                aluno.setNome(rs.getString("nome"));
+                aluno.setSexo(rs.getInt("sexo"));
+                aluno.setNota1(rs.getDouble("nota1"));
+                aluno.setNota2(rs.getDouble("nota2"));
+                aluno.setMedia(rs.getDouble("media"));
+                aluno.setSituacao(rs.getInt("situacao"));
+                aluno.setApagado(rs.getInt("apagado"));
+                listAlunos.add(aluno);
+            }
+        }catch(SQLException ex){
+            JOptionPane.showMessageDialog(null, "Erro na leitura do banco: "+ex,"ERRO",JOptionPane.ERROR_MESSAGE);
+        }finally{
+            ConnectionFactory.closeConnection(con, stmt, rs);
+        }
+        return listAlunos;
+    }
+    public void exclui(int cod){
+        Connection con = ConnectionFactory.getConnection();
+        PreparedStatement stmt = null;
+        String sql = "UPDATE alunos set apagado = 1 WHERE cod = ?";
+        try{
+            stmt = con.preparedStatement(sql);
+            stmt = set.Int(1, cod);
+            stmt.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Aluno excluído com sucesso!");
+        }catch(SQLException e){
+            JOptionPane.showMessageDialog(null, "Erro ao exluir"+e);
+        }finally{
+            ConnectionFactory.closeConnection(con, stmt);
         }
     }
 }
